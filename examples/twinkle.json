@@ -1,0 +1,89 @@
+{
+	"metadata": {
+		"input_file": "twinkle.mid",
+		"comments": "Just testing"
+	},
+	"waveforms": [{
+		"name": "square",
+		"equation": "sgn(sin(x))"
+	},
+	{
+		"name": "sawtooth",
+		"equation": "x%2-1"
+	},
+	{
+		"name": "vibrato_sine",
+		"equation": "sin(time*10)"
+	}],
+	"envelopes": [{
+		"name": "square_fade",
+		"phases": [
+		{
+			"start_time": 0.0,
+			"end_time": 0.1,
+			"start_val": 0.0,
+			"end_val": 1.0,
+			"ease_fn": "SineOut"
+		},
+		{
+			"start_time": 0.1,
+			"end_time": 1.0,
+			"start_val": 1.0,
+			"end_val": -1.0,
+			"ease_fn": "SineIn"
+		}]
+	},
+	{
+		"name": "saw_fade",
+		"phases": [
+		{
+			"start_time": 0.0,
+			"end_time": 0.1,
+			"start_val": 0.0,
+			"end_val": 0.5,
+			"ease_fn": "SineOut"
+		},
+		{
+			"start_time": 0.1,
+			"end_time": 0.75,
+			"start_val": 0.5,
+			"end_val": 0.5,
+			"ease_fn": "Linear"
+		},
+		{
+			"start_time": 0.75,
+			"end_time": 1.0,
+			"start_val": 0.5,
+			"end_val": -0.5,
+			"ease_fn": "SineIn"
+		}]
+	}],
+	"instruments": [{
+		"name": "square_inst",
+		"midi_inst": 0,
+		"midi_percussion": false,
+		"carrier": "square",
+		"am": [{
+			"modulator": "square_fade",
+			"depth": 1.0
+		},
+		{
+			"modulator": "vibrato_sine",
+			"depth": 0.5
+		}]
+	},
+	{
+		"name": "saw_inst",
+		"midi_inst": 32,
+		"midi_percussion": false,
+		"carrier": "sawtooth",
+		"am": [{
+			"modulator": "saw_fade",
+			"depth": 1.0
+		}]
+	}],
+	"outputs": [{
+		"output_file": "twinkle.wav",
+		"channels": [0, 1]
+	}]
+}
