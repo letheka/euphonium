@@ -1,22 +1,20 @@
 {
 	"metadata": {
 		"input_file": "twinkle.mid",
-		"comments": "Twinkle Twinkle Little Star with basic waveforms"
+		"comments": "Twinkle Twinkle Little Star with a sample"
 	},
+	"sample_banks": [{
+		"name": "piano",
+		"files": {
+			"69": "PianoA4.wav"
+		}
+	}],
 	"waveforms": [{
-		"name": "square",
-		"equation": "sgn(sin(x))"
-	},
-	{
-		"name": "sawtooth",
-		"equation": "x%2-1"
-	},
-	{
 		"name": "vibrato_sine",
 		"equation": "sin(time*10)"
 	}],
 	"envelopes": [{
-		"name": "square_fade",
+		"name": "melody_fade",
 		"phases": [{
 			"start_time": 0.0,
 			"end_time": 0.1,
@@ -33,7 +31,7 @@
 		}]
 	},
 	{
-		"name": "saw_fade",
+		"name": "bass_fade",
 		"phases": [{
 			"start_time": 0.0,
 			"end_time": 0.1,
@@ -57,12 +55,12 @@
 		}]
 	}],
 	"instruments": [{
-		"name": "square_inst",
+		"name": "melody_inst",
 		"midi_inst": 0,
 		"midi_percussion": false,
-		"carrier": "square",
+		"carrier": "piano",
 		"am": [{
-			"modulator": "square_fade",
+			"modulator": "melody_fade",
 			"depth": 1.0
 		},
 		{
@@ -71,17 +69,17 @@
 		}]
 	},
 	{
-		"name": "saw_inst",
+		"name": "bass_inst",
 		"midi_inst": 32,
 		"midi_percussion": false,
-		"carrier": "sawtooth",
+		"carrier": "piano",
 		"am": [{
-			"modulator": "saw_fade",
+			"modulator": "bass_fade",
 			"depth": 1.0
 		}]
 	}],
 	"outputs": [{
-		"output_file": "twinkle.wav",
+		"output_file": "twinkle_piano.wav",
 		"channels": [0, 1]
 	}]
 }

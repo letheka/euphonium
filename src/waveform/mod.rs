@@ -81,6 +81,8 @@ impl Waveform {
 }
 
 impl SampleGen for Waveform {
+    fn cache(&mut self, _p: &Params) {}
+
     fn get_sample(&self, p: &Params) -> Option<f32> {
         self.eval(&self.equation, p).ok()
     }

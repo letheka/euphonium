@@ -25,6 +25,8 @@ impl Envelope {
 }
 
 impl SampleGen for Envelope {
+    fn cache(&mut self, _p: &Params) {}
+
     fn get_sample(&self, _p: &Params) -> Option<f32> {
         None
     }

@@ -17,6 +17,7 @@ pub struct Note {
     pub program: u8,
     pub start_time: u64,
     pub end_time: u64,
+    pub midi_note: u8,
     pub freq: f32,
     // pub frequencies: Envelope,
     // pub amplitudes: Envelope,
@@ -113,6 +114,7 @@ impl Handler for MidiHandler {
                             program: pn.program,
                             start_time,
                             end_time,
+                            midi_note: pn.note,
                             freq,
                             // amplitudes,
                         });

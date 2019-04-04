@@ -27,6 +27,9 @@ use midi::{MidiHandler, Note};
 pub mod parse;
 use parse::{JSONArrangement};
 
+pub mod sample_bank;
+use sample_bank::SampleBank;
+
 pub mod samplegen;
 use samplegen::{Params, SampleGen};
 
@@ -64,6 +67,13 @@ fn main() -> Result<(), Error> {
     let input_file = json.metadata.input_file;
     let notes = parse_midi_file(input_file)?;
 
+    // Create sample banks based on the JSON parameters
+    let mut sample_banks = HashMap::new();
+    for b in json.sample_banks {
+        let name = b.name.to_string();
+        sample_banks.insert(name, SampleBank::new(b.name.to_string(), b.files));
+    }
+
     // Create waveforms based on the JSON parameters
     let mut waveforms = HashMap::new();
     for w in json.waveforms {
@@ -93,6 +103,7 @@ fn main() -> Result<(), Error> {
     let mut instruments = HashMap::new();
     for i in json.instruments {
         let name = i.name.to_string();
+
         let mut am = Vec::new();
         for m in i.am {
             // TODO: allow using instruments as modulators
@@ -109,13 +120,26 @@ fn main() -> Result<(), Error> {
                 });
             }
         }
-        instruments.insert(name.clone(), Instrument {
-            name,
-            midi_inst: i.midi_inst,
-            midi_percussion: i.midi_percussion,
-            carrier: waveforms[&i.carrier].clone(),
-            am
-        });
+        // What type is the carrier?
+        if sample_banks.contains_key(&i.carrier) {
+            instruments.insert(name.clone(), Instrument {
+                name,
+                midi_inst: i.midi_inst,
+                midi_percussion: i.midi_percussion,
+                carrier: Box::new(sample_banks[&i.carrier].clone()),
+                am
+            });
+        } else if waveforms.contains_key(&i.carrier) {
+            instruments.insert(name.clone(), Instrument {
+                name,
+                midi_inst: i.midi_inst,
+                midi_percussion: i.midi_percussion,
+                carrier: Box::new(waveforms[&i.carrier].clone()),
+                am
+            });
+        } else {
+            unimplemented!()
+        }
     }
 
     // Figure out which MIDI channels we need to pay attention to
@@ -159,13 +183,19 @@ fn main() -> Result<(), Error> {
                 }
                 let inst = maybe_inst.unwrap();
 
+                let mut cache_p: Params = HashMap::new();
+                cache_p.insert("midi_note".to_string(), n.midi_note as f32);
+                instruments.get_mut(&inst).unwrap().cache(&cache_p);
+
                 for s in 0..dur {
                     let mut p: Params = HashMap::new();
                     p.insert("duration".to_string(), dur as f32);
                     p.insert("sample".to_string(), s as f32);
                     p.insert("time".to_string(), s as f32 / 44100.0);
                     p.insert("rate".to_string(), 44100.0);
+                    p.insert("midi_note".to_string(), n.midi_note as f32);
                     p.insert("x".to_string(), s as f32 * n.freq as f32 / 44100.0);
+                    // instruments.get_mut(&inst).unwrap().cache(&p);
                     let o = instruments[&inst].get_sample(&p).unwrap();
                     output[(begin + s) as usize] += o;
                     if output[(begin + s) as usize] > loudest {

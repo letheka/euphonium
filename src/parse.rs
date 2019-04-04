@@ -1,8 +1,10 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize)]
 pub struct JSONArrangement {
     pub metadata: JSONMetadata,
+    pub sample_banks: Vec<JSONSampleBank>,
     pub waveforms: Vec<JSONWaveform>,
     pub envelopes: Vec<JSONEnvelope>,
     pub instruments: Vec<JSONInstrument>,
@@ -13,6 +15,12 @@ pub struct JSONArrangement {
 pub struct JSONMetadata {
     pub input_file: String,
     pub comments: String
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct JSONSampleBank {
+    pub name: String,
+    pub files: HashMap<String, String>
 }
 
 #[derive(Serialize, Deserialize)]

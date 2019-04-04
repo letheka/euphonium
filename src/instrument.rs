@@ -11,12 +11,16 @@ pub struct Instrument {
     pub name: String,
     pub midi_inst: u8,
     pub midi_percussion: bool,
-    pub carrier: Waveform,
+    pub carrier: Box<SampleGen>,
     pub am: Vec<Modulator>,
     //pub fm: Vec<Modulator>
 }
 
 impl SampleGen for Instrument {
+    fn cache(&mut self, p: &Params) {
+        self.carrier.cache(&p);
+    }
+
     fn get_sample(&self, p: &Params) -> Option<f32> {
         let mut c = self.carrier.get_sample(&p).unwrap();
         for modulator in &self.am {
